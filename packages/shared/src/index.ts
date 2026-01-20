@@ -7,12 +7,12 @@ export const natalChartInputSchema = z.object({
   fullName: z.string().min(1, "Họ tên là bắt buộc"),
   gender: genderSchema,
   calendarType: calendarTypeSchema,
-  day: z.number().int().min(1).max(31),
-  month: z.number().int().min(1).max(12),
-  year: z.number().int().min(1900).max(2100),
-  hour: z.number().int().min(0).max(23),
-  minute: z.number().int().min(0).max(59),
-  viewingYear: z.number().int().min(1900).max(2100)
+  day: z.coerce.number().int().min(1).max(31),
+  month: z.coerce.number().int().min(1).max(12),
+  year: z.coerce.number().int().min(1900).max(2100),
+  hour: z.coerce.number().int().min(0).max(23),
+  minute: z.coerce.number().int().min(0).max(59),
+  viewingYear: z.coerce.number().int().min(1900).max(2100)
 });
 
 export type NatalChartInput = z.infer<typeof natalChartInputSchema>;
