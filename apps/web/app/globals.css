@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+  background: #f5f7fb;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.chart-card {
+  min-height: 140px;
+  border: 1px solid #f0f0f0;
+}
+
+.section-card {
+  margin-top: 24px;
+}

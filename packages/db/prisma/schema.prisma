@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  staff
+}
+
+enum ReadingStatus {
+  pending
+  running
+  done
+  failed
+}
+
+model AdminUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(staff)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  audits    AuditLog[]
+}
+
+model NatalChart {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  input     NatalChartInput?
+  snapshot  NatalChartSnapshot?
+  readings  AIReading[]
+
+  @@index([createdAt])
+}
+
+model NatalChartInput {
+  id           String   @id @default(uuid())
+  chartId      String   @unique
+  rawInput     Json
+  normalized   Json
+  gender       String
+  yearOfBirth  Int
+  viewingYear  Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  chart        NatalChart @relation(fields: [chartId], references: [id])
+
+  @@index([yearOfBirth])
+  @@index([gender])
+  @@index([viewingYear])
+}
+
+model NatalChartSnapshot {
+  id        String   @id @default(uuid())
+  chartId   String   @unique
+  snapshot  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  chart     NatalChart @relation(fields: [chartId], references: [id])
+}
+
+model AIReading {
+  id            String        @id @default(uuid())
+  chartId       String
+  status        ReadingStatus @default(pending)
+  provider      String?
+  model         String?
+  promptVersion String?
+  prompt        String
+  systemPrompt  String
+  content       String?
+  errorMessage  String?
+  latencyMs     Int?
+  usageTokens   Int?
+  costUsd       Float?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  chart         NatalChart @relation(fields: [chartId], references: [id])
+
+  @@index([status])
+  @@index([chartId])
+  @@index([createdAt])
+}
+
+model PromptTemplate {
+  id        String   @id @default(uuid())
+  version   String   @unique
+  title     String
+  system    String
+  user      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  action     String
+  entity     String
+  entityId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  actor      AdminUser? @relation(fields: [actorId], references: [id])
+
+  @@index([createdAt])
+}

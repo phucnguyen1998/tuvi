@@ -1,0 +1,31 @@
+{
+  "name": "tuvi-dauso",
+  "private": true,
+  "packageManager": "pnpm@9.12.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "dev:web": "pnpm --filter ./apps/web dev",
+    "dev:worker": "pnpm --filter ./apps/worker dev",
+    "build": "pnpm -r build",
+    "start": "pnpm --filter ./apps/web start",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "db:generate": "pnpm --filter ./packages/db prisma:generate",
+    "db:migrate": "pnpm --filter ./packages/db prisma:migrate",
+    "db:deploy": "pnpm --filter ./packages/db prisma:deploy",
+    "db:seed": "pnpm --filter ./packages/db prisma:seed",
+    "db:studio": "pnpm --filter ./packages/db prisma:studio",
+    "format": "prettier -w .",
+    "healthcheck": "tsx scripts/healthcheck.ts"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3"
+  }
+}
