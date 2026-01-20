@@ -1,5 +1,5 @@
 import { prisma } from "@tuvi/db";
-import { compareSync } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const isValid = compareSync(credentials.password, user.password);
+        const isValid = bcrypt.compareSync(credentials.password, user.password);
         if (!isValid) {
           return null;
         }

@@ -32,25 +32,33 @@ pnpm db:migrate
 pnpm db:seed
 ```
 
-## 6. Chạy web + worker
+## 6. Tạo symlink .env cho Next.js
+
+Next.js chỉ load file `.env` từ thư mục root của app. Tạo symlink để Next.js có thể đọc biến môi trường:
+
+```bash
+cd apps/web && ln -sf ../../.env .env
+```
+
+## 7. Chạy web + worker
 
 ```bash
 pnpm dev:web
 pnpm dev:worker
 ```
 
-## 7. Healthcheck
+## 8. Healthcheck
 
 ```bash
 pnpm healthcheck
 ```
 
-## 8. Truy cập
+## 9. Truy cập
 
 - Web: http://localhost:3000
 - CMS: http://localhost:3000/cms/login
 
-## 9. Chuyển provider OpenAI
+## 10. Chuyển provider OpenAI
 
 Trong `.env`:
 
@@ -61,7 +69,7 @@ AI_API_KEY=YOUR_KEY
 AI_MODEL=gpt-4o-mini
 ```
 
-## 10. Ghi chú
+## 11. Ghi chú
 
 - Worker cần chạy liên tục để xử lý job AI.
 - Nếu dùng LM Studio, đảm bảo đang chạy ở `http://localhost:1234/v1`.
