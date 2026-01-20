@@ -1,26 +1,62 @@
 import type { ChartSnapshot, NatalChartInput, PalaceSnapshot } from "@tuvi/shared";
+import { generateTuViChart } from "./tuvi-engine";
+import { solarToLunar } from "./lunar-calendar";
 
-const palaceOrder: PalaceSnapshot[] = [
-  { key: "menh", label: "Mệnh", diaChi: "Tý", mainStars: ["Tử Vi"], subStars: ["Thiên Phủ"], notes: "TODO: tính sao chính" },
-  { key: "phuMau", label: "Phụ Mẫu", diaChi: "Sửu", mainStars: ["Thiên Tướng"], subStars: [], notes: "TODO" },
-  { key: "phucDuc", label: "Phúc Đức", diaChi: "Dần", mainStars: ["Thiên Lương"], subStars: [], notes: "TODO" },
-  { key: "dienTrach", label: "Điền Trạch", diaChi: "Mão", mainStars: ["Thái Dương"], subStars: [], notes: "TODO" },
-  { key: "quanLoc", label: "Quan Lộc", diaChi: "Thìn", mainStars: ["Vũ Khúc"], subStars: [], notes: "TODO" },
-  { key: "noBoc", label: "Nô Bộc", diaChi: "Tỵ", mainStars: ["Thiên Cơ"], subStars: [], notes: "TODO" },
-  { key: "thienDi", label: "Thiên Di", diaChi: "Ngọ", mainStars: ["Liêm Trinh"], subStars: [], notes: "TODO" },
-  { key: "tatAch", label: "Tật Ách", diaChi: "Mùi", mainStars: ["Thất Sát"], subStars: [], notes: "TODO" },
-  { key: "taiBach", label: "Tài Bạch", diaChi: "Thân", mainStars: ["Tham Lang"], subStars: [], notes: "TODO" },
-  { key: "tuTuc", label: "Tử Tức", diaChi: "Dậu", mainStars: ["Cự Môn"], subStars: [], notes: "TODO" },
-  { key: "phuThe", label: "Phu Thê", diaChi: "Tuất", mainStars: ["Thiên Đồng"], subStars: [], notes: "TODO" },
-  { key: "huynhDe", label: "Huynh Đệ", diaChi: "Hợi", mainStars: ["Thái Âm"], subStars: [], notes: "TODO" }
-];
+export * from "./lunar-calendar";
+export * from "./tuvi-engine";
 
 const pad = (value: number) => value.toString().padStart(2, "0");
 
+const palaceMap: Record<PalaceSnapshot["key"], string> = {
+  menh: "Mệnh",
+  phuMau: "Phụ Mẫu",
+  phucDuc: "Phúc Đức",
+  dienTrach: "Điền Trạch",
+  quanLoc: "Quan Lộc",
+  noBoc: "Nô Bộc",
+  thienDi: "Thiên Di",
+  tatAch: "Tật Ách",
+  taiBach: "Tài Bạch",
+  tuTuc: "Tử Tức",
+  phuThe: "Phu Thê",
+  huynhDe: "Huynh Đệ"
+};
+
+const palaceKeys: PalaceSnapshot["key"][] = [
+  "menh",
+  "phuMau",
+  "phucDuc",
+  "dienTrach",
+  "quanLoc",
+  "noBoc",
+  "thienDi",
+  "tatAch",
+  "taiBach",
+  "tuTuc",
+  "phuThe",
+  "huynhDe"
+];
+
 export const computeChartSnapshot = (input: NatalChartInput): ChartSnapshot => {
   const solarDate = `${pad(input.day)}/${pad(input.month)}/${input.year}`;
-  const lunarDate = input.calendarType === "lunar" ? solarDate : "TODO: chuyển đổi âm lịch";
+  const lunar = solarToLunar({ day: input.day, month: input.month, year: input.year });
+  const lunarDate = `${pad(lunar.day)}/${pad(lunar.month)}/${lunar.year}`;
   const hourLabel = `${pad(input.hour)}:${pad(input.minute)}`;
+
+  const chart = generateTuViChart(
+    new Date(input.year, input.month - 1, input.day),
+    { hour: input.hour, minute: input.minute },
+    input.gender
+  );
+
+  const palaces = chart.palaces.map((palace, index) => ({
+    key: palaceKeys[index],
+    label: palace.name,
+    diaChi: palace.branch,
+    mainStars: palace.stars.filter((star) => star.type === "main").map((star) => star.name),
+    subStars: palace.stars.filter((star) => star.type === "aux").map((star) => star.name),
+    notes: "TODO: Hoàn thiện an sao chi tiết theo Nam Tông/Tân Biên."
+  }));
 
   return {
     id: crypto.randomUUID(),
@@ -30,11 +66,11 @@ export const computeChartSnapshot = (input: NatalChartInput): ChartSnapshot => {
     lunarDate,
     hour: hourLabel,
     viewingYear: input.viewingYear,
-    menhElement: "Kim",
-    menhCuc: "Kim tứ cục",
-    thanPosition: "Thân cư Mệnh",
-    palaces: palaceOrder,
+    menhElement: chart.destiny.menh,
+    menhCuc: chart.destiny.cuc,
+    thanPosition: "TODO: tính Thân cư cung theo Nam Tông",
+    palaces,
     skeletonNote:
-      "TODO: Thuật toán an sao, an thân, can chi, cục số và đại vận cần hoàn thiện. Hiện tại dùng dữ liệu skeleton để UI ổn định."
+      "Thuật toán an sao đã có nền tảng lịch pháp và tứ trụ; cần bổ sung đầy đủ bảng sao, đại vận và quy tắc Nam Tông/Tân Biên."
   };
 };

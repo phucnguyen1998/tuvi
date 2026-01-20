@@ -1,6 +1,6 @@
 # Giả định (ASSUMPTIONS)
 
-- Dữ liệu thuật toán an sao, can chi, đại vận chưa đủ chuẩn nên module `tuvi-engine` trả về snapshot skeleton cố định theo cấu trúc đúng, có TODO để mở rộng. 
+- Thuật toán an sao hiện là mô phỏng: đã tính Can Chi năm, vị trí Mệnh/Thân và gán sao theo seed cố định để dữ liệu ổn định, chưa thay thế công thức tử vi chuẩn.
 - CMS dùng NextAuth Credentials, seed tạo sẵn tài khoản:
   - admin@tuvi.local / admin123 (role: admin)
   - staff@tuvi.local / staff123 (role: staff)

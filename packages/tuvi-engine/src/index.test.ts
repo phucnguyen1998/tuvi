@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeChartSnapshot } from "./index";
+import { computeChartSnapshot, generateTuViChart, solarToLunar } from "./index";
 
 const baseInput = {
   fullName: "Test",
@@ -18,26 +18,49 @@ describe("computeChartSnapshot", () => {
     const snapshot = computeChartSnapshot(baseInput);
     expect(snapshot.fullName).toBe("Test");
     expect(snapshot.palaces).toHaveLength(12);
+    expect(snapshot.palaces[0].label).toBe("Mệnh");
   });
 
   it("tạo snapshot ổn định cho case 2", () => {
     const snapshot = computeChartSnapshot({ ...baseInput, fullName: "An", gender: "female" });
     expect(snapshot.gender).toBe("Nữ");
     expect(snapshot.viewingYear).toBe(2026);
+    expect(snapshot.menhElement).toBeDefined();
   });
 
   it("tạo snapshot ổn định cho case 3", () => {
     const snapshot = computeChartSnapshot({ ...baseInput, day: 1, month: 1, year: 1990 });
     expect(snapshot.solarDate).toBe("01/01/1990");
+    expect(snapshot.palaces[0].diaChi).toBeTruthy();
   });
 
   it("tạo snapshot ổn định cho case 4", () => {
     const snapshot = computeChartSnapshot({ ...baseInput, calendarType: "lunar" });
     expect(snapshot.lunarDate).toContain("/");
+    expect(snapshot.lunarDate).not.toContain("giả lập");
   });
 
   it("tạo snapshot ổn định cho case 5", () => {
     const snapshot = computeChartSnapshot({ ...baseInput, hour: 23, minute: 45 });
     expect(snapshot.hour).toBe("23:45");
+    expect(snapshot.palaces[0].mainStars.length).toBeGreaterThan(0);
+  });
+});
+
+describe("generateTuViChart", () => {
+  it("tạo tứ trụ đầy đủ", () => {
+    const chart = generateTuViChart(new Date(2000, 4, 15), { hour: 10, minute: 30 }, "male");
+    expect(chart.fourPillars.year).toContain(" ");
+    expect(chart.fourPillars.month).toContain(" ");
+    expect(chart.fourPillars.day).toContain(" ");
+    expect(chart.fourPillars.hour).toContain(" ");
+  });
+});
+
+describe("solarToLunar", () => {
+  it("chuyển đổi âm dương ổn định", () => {
+    const lunar = solarToLunar({ day: 1, month: 1, year: 2024 });
+    expect(lunar.day).toBeGreaterThan(0);
+    expect(lunar.month).toBeGreaterThan(0);
   });
 });
